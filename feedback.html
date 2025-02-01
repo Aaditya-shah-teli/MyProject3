@@ -1,0 +1,172 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feedback</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        background-color: rgb(0, 31, 0);
+        font-family: sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        overflow: hidden;
+        margin: 0;
+        position: relative;
+      }
+
+      .panel-container {
+        background-color: #305636;
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+        border-radius: 4px;
+        font-size: 90%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 30px;
+        width: 700px;
+        color: #fff;
+      }
+
+      .ratings-container {
+        display: flex;
+        margin: 20px 0;
+      }
+
+      .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        width: 500px;
+      }
+
+      .rating {
+        flex: 1;
+        padding: 20px;
+        margin: 10px 5px;
+        cursor: pointer;
+      }
+
+      .rating:hover,
+      .rating.active {
+        border-radius: 4px;
+        background-color: #8ba18f;
+        transition: 1s ease;
+      }
+
+      .rating .icon {
+        width: 40px;
+        font-size: 5rem;
+        margin-right: 10px;
+      }
+
+      .rating small {
+        color: #fff;
+        display: inline-block;
+        margin: 10px 0 0;
+      }
+
+      .btn {
+        background: #dfebd9;
+        color: #000;
+        border: 0;
+        border-radius: 4px;
+        padding: 12px 30px;
+        cursor: pointer;
+        outline: 0;
+      }
+
+      .btn:active {
+        transform: scale(0.98);
+      }
+
+      /* JavaScript */
+      .heart {
+        font-size: 3rem;
+        margin-bottom: 10px;
+      }
+
+      /* Home Button */
+      .home-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background-color: #305636;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+
+      .home-btn:hover {
+        background-color: #8ba18f;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="home-btn" onclick="window.location.href='index.html'">Home</button>
+
+    <section class="panel-container" id="panel">
+      <strong>Your Feedback 😉</strong>
+      <div class="ratings-container">
+        <div class="container">
+          <div class="rating">
+            <div class="icon">😒</div>
+            <small>Unhappy</small>
+          </div>
+          <div class="rating">
+            <div class="icon">😐</div>
+            <small>Neutral</small>
+          </div>
+          <div class="rating">
+            <div class="icon">😆</div>
+            <small>Satisfied</small>
+          </div>
+        </div>
+      </div>
+      <button class="btn" id="send">Send Feedback</button>
+    </section>
+
+    <script>
+      const ratings = document.querySelectorAll(".rating");
+      const ratingsContainer = document.querySelector(".ratings-container");
+      const sendBtn = document.querySelector("#send");
+      const panel = document.querySelector("#panel");
+
+      let selectedRating = "Satisfied";
+
+      ratingsContainer.addEventListener("click", (e) => {
+        if (e.target.parentNode.classList.contains("rating")) {
+          removeActives();
+          e.target.parentNode.classList.add("active");
+          selectedRating = e.target.nextElementSibling.innerHTML;
+        }
+      });
+
+      sendBtn.addEventListener("click", () => {
+        panel.innerHTML = `
+        <p class="heart">💖</p>
+        <strong>Thank You! </strong>
+        <br>
+        <strong>Feedback: ${selectedRating} </strong>
+    `;
+      });
+
+      function removeActives() {
+        for (let i = 0; i < ratings.length; i++) {
+          ratings[i].classList.remove("active");
+        }
+      }
+    </script>
+  </body>
+</html>

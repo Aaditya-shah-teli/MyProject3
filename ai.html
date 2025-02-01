@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOTANY DEFENDERS virtual assistant</title>
+  <link rel="shortcut icon" href="logo.jpg" type="image/x-icon">
+  <style>@import url('https://fonts.googleapis.com/css2?family=Protest+Guerrilla&display=swap');
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    body{
+        width: 100%;
+        height: 100%;
+        background-color: rgb(0, 31, 0);
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap:30px;
+        flex-direction: column;
+    }
+    #logo{
+        width: 20vw;
+    }
+    h1{
+        color: aliceblue;
+        font-family: "Protest Guerrilla", sans-serif;
+    }
+    #name{
+        color:rgb(116, 255, 169);
+        font-size: 45px;
+    }
+    #va{
+        color:rgb(43, 206, 212);
+        font-size: 45px; 
+    }
+    #voice{
+        width: 100px;
+        display: none;
+       
+    }
+    #btn{
+    width: 30%;
+    /* background: linear-gradient(to right,rgb(1, 243, 49),rgb(87, 239, 143)); */
+    background: rgb(56, 132, 255);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 20px;
+    border-radius: 20px;
+    color: white;
+    box-shadow: 2px 2px 10px rgb(21, 145, 207),2px 2px 10px rgb(201, 41, 116);
+    border: none;
+    transition: all 0.5s;
+    cursor: pointer;
+    }
+    #btn:hover{
+        box-shadow: 2px 2px 20px rgb(21, 145, 207),2px 2px 20px rgb(201, 41, 116);
+        /* letter-spacing: 2px; */
+    }
+    nav {
+    padding: 2vw 0vw;
+    width: 100%;
+    /* background-color: red; */
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 100;
+    justify-content: space-between;
+}
+
+#nav-part2 {
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+}
+
+#nav-part2 h4 {
+    padding: 10px 20px;
+    border: 1px solid #e0d8fd;
+    border-radius: 50px;
+    font-weight: 500;
+    color: #dde7ff;
+    transition: all ease 0.4s;
+    position: relative;
+    font-size: 18px;
+    overflow: hidden;
+}
+
+#nav-part2 h4::after {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: rgb(13, 63, 164);
+    left: 0;
+    bottom: -100%;
+    border-radius: 50%;
+    transition: all ease 0.4s;
+}
+
+#nav-part2 h4:hover::after {
+    bottom: 0;
+    border-radius: 0;
+}
+
+#nav-part2 h4 a {
+    color: #ffffffbb;
+    text-decoration: none;
+    position: relative;
+    z-index: 9;
+}
+
+#nav-part2 h4:hover a {
+    color: #fff;
+}
+
+nav h3 {
+    display: none;
+}
+    </style>
+</head>
+<body>
+    <nav>
+        <p>Arnikans</p>
+        <div id="nav-part2">
+            <h4><a href="index.html">Home</a></h4>
+            <h4><a href="signIn.html">Wanna join us</a></h4>
+            
+        </div>
+        <h3>Menu</h3>
+    </nav>
+    <img src="png.png" alt="logo" id="logo">
+    <h1>I'm <span id="name">Botanic defender</span>,Your <span id="va">Virtual Assistant</span></h1>
+    <img src="mic.png" alt="voice" id="voice">
+    <button id="btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" color="white" fill="none">
+        <path d="M17 7V11C17 13.7614 14.7614 16 12 16C9.23858 16 7 13.7614 7 11V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7Z" stroke="currentColor" stroke-width="1.5" />
+        <path d="M20 11C20 15.4183 16.4183 19 12 19M12 19C7.58172 19 4 15.4183 4 11M12 19V22M12 22H15M12 22H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+    </svg><span id="content"> Click here for talk to me</span> </button>
+
+    <script>let btn=document.querySelector("#btn")
+        let content=document.querySelector("#content")
+        let voice=document.querySelector("#voice")
+        
+        function speak(text){
+            let text_speak=new SpeechSynthesisUtterance(text)
+            text_speak.rate=1
+            text_speak.pitch=.7
+            text_speak.volume=1
+            text_speak.lang="hi-GB"
+            window.speechSynthesis.speak(text_speak)
+        }
+        
+        function wishMe(){
+            let day=new Date()
+            let hours=day.getHours()
+            if(hours>=0 && hours<12){
+                speak("Good Morning Sir")
+            }
+            else if(hours>=12 && hours <16){
+                speak("Good afternoon Sir")
+            }else{
+                speak("Good Evening Sir")
+            }
+        }
+        // window.addEventListener('load',()=>{
+        //     wishMe()
+        // })
+        let speechRecognition= window.SpeechRecognition || window.webkitSpeechRecognition 
+        let recognition =new speechRecognition()
+        recognition.onresult=(event)=>{
+            let currentIndex=event.resultIndex
+            let transcript=event.results[currentIndex][0].transcript
+            content.innerText=transcript
+           takeCommand(transcript.toLowerCase())
+        }
+        
+        btn.addEventListener("click",()=>{
+            recognition.start()
+            voice.style.display="block"
+            btn.style.display="none"
+        })
+        function takeCommand(message){
+           voice.style.display="none"
+            btn.style.display="flex"
+            if(message.includes("hello")||message.includes("hey")){
+                speak("hey, how can i assist you regarding botanic problems")
+            }
+            else if(message.includes("who are you") || message.includes("hu r u")){
+                speak("i am virtual botanical defender ,created by arnikans")
+            }else if(message.includes("open youtube")){
+                speak("opening youtube...")
+                window.open("https://youtube.com/","_blank")
+            }
+            else if(message.includes("what is your name") || message.includes("timro naam ki ho") || message.includes("tumhara naam kyon")){
+                speak("Mero naam botanic defender ho")
+            }
+            else if(message.includes("what is agritech") || message.includes("agri tech bhaneko k ho") || message.includes("define agritech")){
+                speak("The future of Agri-Tech in Nepal is set to revolutionize traditional farming by integrating smart technologies that enhance productivity, reduce costs, and promote sustainable practices. Advanced tools like drones will assist in crop monitoring and pesticide spraying, while AI-powered irrigation systems will optimize water usage. Machine learning will help analyze soil health, detect diseases, and recommend the best crops for specific regions. Additionally, innovative farming techniques such as hydroponics and aeroponics will enable soil-less cultivation, making urban agriculture more feasible. The use of big data and sensors will allow farmers to monitor temperature, humidity, and nutrient levels, ensuring maximum yield. Gene editing will further improve crop resilience, making them pest-resistant and high-yielding. In the coming years, Nepal can expect the rise of digital agricultural markets, where farmers can directly sell their produce online, eliminating middlemen and increasing profits. Localized and affordable Agri-Tech solutions will empower small-scale farmers, supported by government initiatives such as subsidies and training programs. The incorporation of renewable energy sources like solar and biogas-powered equipment will further enhance efficiency while reducing environmental impact. With these advancements, Agri-Tech will modernize Nepal’s agricultural sector, making it more scientific, profitable, and sustainable, ultimately improving the livelihoods of farmers across the country. 🚜🌱")
+            }
+            else if(message.includes("open google")){
+                speak("opening google...")
+                window.open("https://google.com/","_blank")
+            }
+            else if(message.includes("open facebook")){
+                speak("opening facebook...")
+                window.open("https://facebook.com/","_blank")
+            }
+            else if(message.includes("open instagram")){
+                speak("opening instagram...")
+                window.open("https://instagram.com/","_blank")
+            }
+            else if(message.includes("open calculator")){
+                speak("opening calculator..")
+                window.open("calculator://")
+            }
+            else if(message.includes("open whatsapp")){
+                speak("opening whatsapp..")
+                window.open("whatsapp://")
+            }
+            else if(message.includes("open chatgpt")){
+                speak("opening chatgpt..")
+                window.open("chatGPT://")
+            }
+            else if(message.includes("time")){
+              let time=new Date().toLocaleString(undefined,{hour:"numeric",minute:"numeric"})
+              speak(time)
+            }
+            else if(message.includes("date")){
+                let date=new Date().toLocaleString(undefined,{day:"numeric",month:"short"})
+                speak(date)
+              }
+            else{
+                let finalText="this is what i found on internet regarding" + message.replace("shipra","") || message.replace("shifra","")
+                speak(finalText)
+                window.open(`https://www.google.com/search?q=${message.replace("shipra","")}`,"_blank")
+            }
+        }</script>
+</body>
+</html>

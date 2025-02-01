@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agricultural Weather App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            border: none;
+            outline: none;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: rgb(0, 31, 0);
+
+            font-family: 'Inter', sans-serif;
+            background-image: url('agri-background.jpg');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: cover;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .container {
+            width: 400px;
+            height: min-content;
+            background-color: #bde1c9;
+            border-radius: 12px;
+            padding: 28px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h2 {
+            font-size: 22px;
+            color: #2a3c57;
+        }
+
+        .search-box {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .search-box input {
+            width: 80%;
+            font-size: 18px;
+            background-color: #fffcf0;
+            padding: 12px 16px;
+            border-radius: 14px;
+            border: 1px solid #ccc;
+        }
+
+        .search-box button {
+            width: 50px;
+            height: 50px;
+            background-color: #34d399;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 22px;
+            color: white;
+            border: none;
+        }
+
+        .home-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: block;
+            width: 100px;
+            height: 40px;
+            background-color: #50856f;
+            color: white;
+            text-align: center;
+            line-height: 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .weather-info {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .weather-info img {
+            width: 60%;
+            margin-bottom: 20px;
+        }
+
+        .weather-details {
+            text-align: center;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        .temperature {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2a3c57;
+        }
+
+        .description {
+            font-size: 18px;
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .crops-info {
+            margin-top: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            color: #4caf50;
+        }
+
+        .climate-tips {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #d9534f;
+        }
+
+        .location-not-found {
+            display: none;
+            color: #f44336;
+            font-weight: 600;
+            text-align: center;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h2>Enter your location to get agricultural weather insights</h2>
+        </div>
+
+        <div class="search-box">
+            <input type="text" class="input-box" placeholder="Enter your city or area">
+            <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </div>
+
+        <div class="location-not-found" id="location-not-found">
+            <p>Location not found! Please try again.</p>
+        </div>
+
+        <div class="weather-info" id="weather-info">
+            <div class="weather-box">
+                <p class="temperature" id="temperature">0°C</p>
+                <p class="description" id="description">Loading...</p>
+            </div>
+            <div class="weather-details">
+                <p><span id="humidity">45%</span> Humidity</p>
+                <p><span id="wind-speed">12 Km/h</span> Wind Speed</p>
+            </div>
+            <div class="crops-info" id="crops-info">Crops: Loading...</div>
+            <div class="climate-tips" id="climate-tips">Climate Tips: Loading...</div>
+        </div>
+    </div>
+
+    <a href="index.html" class="home-btn" id="homeBtn">Home</a>
+
+    <script>
+        const inputBox = document.querySelector('.input-box');
+        const searchBtn = document.getElementById('searchBtn');
+        const temperature = document.getElementById('temperature');
+        const description = document.getElementById('description');
+        const humidity = document.getElementById('humidity');
+        const windSpeed = document.getElementById('wind-speed');
+        const locationNotFound = document.getElementById('location-not-found');
+        const weatherInfo = document.getElementById('weather-info');
+        const cropsInfo = document.getElementById('crops-info');
+        const climateTips = document.getElementById('climate-tips');
+        const homeBtn = document.getElementById('homeBtn');
+
+        async function getWeatherData(city) {
+            const apiKey = "9ef94a95f4475ff3f3558ad3ea74295b";
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.cod === "404") {
+                    locationNotFound.style.display = "block";
+                    weatherInfo.style.display = "none";
+                    return;
+                }
+
+                locationNotFound.style.display = "none";
+                weatherInfo.style.display = "flex";
+
+                let temp = Math.round(data.main.temp - 273.15);
+                temperature.textContent = `${temp}°C`;
+                description.textContent = data.weather[0].description;
+                humidity.textContent = `${data.main.humidity}%`;
+                windSpeed.textContent = `${data.wind.speed} Km/h`;
+
+                let crops = "";
+                let tips = "";
+                if (temp <= 10) {
+                    crops = "Kale, Spinach, Cabbage, Carrots, Radish";
+                    tips = "Protect your crops from frost and ensure proper drainage.";
+                } else if (temp <= 20) {
+                    crops = "Lettuce, Peas, Broccoli, Onions, Strawberries";
+                    tips = "Good weather for planting cool-season crops. Water consistently.";
+                } else if (temp <= 30) {
+                    crops = "Tomatoes, Corn, Peppers, Mangoes, Bananas";
+                    tips = "Ensure crops are watered adequately to prevent heat stress.";
+                } else if (temp <= 40) {
+                    crops = "Okra, Watermelon, Papaya, Guava, Dates";
+                    tips = "Extreme heat; irrigation and shade for crops are essential.";
+                } else {
+                    crops = "Extreme temperatures; focus on drought-resistant crops.";
+                    tips = "Monitor your crops closely, and provide shade where needed.";
+                }
+
+                cropsInfo.textContent = `Best crops for this temperature: ${crops}`;
+                climateTips.textContent = `Agricultural tips: ${tips}`;
+            } catch (error) {
+                locationNotFound.style.display = "block";
+                weatherInfo.style.display = "none";
+            }
+        }
+
+        searchBtn.addEventListener("click", () => {
+            const city = inputBox.value.trim();
+            if (city) {
+                getWeatherData(city);
+            } else {
+                alert("Please enter a city name.");
+            }
+        });
+
+        homeBtn.addEventListener("click", () => {
+            locationNotFound.style.display = "none";
+            weatherInfo.style.display = "none";
+            inputBox.value = "";
+        });
+    </script>
+    <script src="https://kit.fontawesome.com/333462ad4d.js" crossorigin="anonymous"></script>
+</body>
+</html>

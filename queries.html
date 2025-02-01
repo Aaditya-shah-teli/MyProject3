@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Consultation</title>
+  <style>
+    /* Project: Consultation Quiz
+       Author: Nabin Upreti (modified with language switch)
+    */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
+
+    body {
+      background: #052c02;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    .main {
+      min-height: 100vh;
+      background: url('/Assets/background2.jpg') no-repeat;
+      background-size: cover;
+      background-position: center;
+      pointer-events: auto;
+      transition: 2s ease;
+    }
+    .main.active {
+      filter: blur(10px);
+      pointer-events: none;
+    }
+
+    /* Header styling */
+    .header {
+      background: transparent;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 20px 10%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 32px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 700;
+      filter: drop-shadow(0 0 5px #09001d);
+    }
+
+    .navbar a {
+      font-size: 18px;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      margin-left: 35px;
+      transition: 0.3s;
+    }
+
+    .navbar a:hover,
+    .navbar a.active {
+      color: #AA2C86;
+    }
+
+    /* Language switch styling */
+    .language-switch {
+      margin-left: 20px;
+    }
+    .language-switch button {
+      background: transparent;
+      border: 1px solid #fff;
+      color: #fff;
+      padding: 5px 10px;
+      margin-left: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .language-switch button:hover {
+      background: #AA2C86;
+      border-color: #AA2C86;
+    }
+
+    /* Container sections */
+    .container {
+      display: flex;
+      height: 100vh;
+      width: 200%;
+    }
+    .home, .quiz-section {
+      position: relative;
+      left: -50%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .home-content {
+      max-width: 600px;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .home-content h1 {
+      font-size: 78px;
+      font-weight: 700;
+      text-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
+      margin-bottom: 20px;
+    }
+
+    .home-content p {
+      font-size: 16px;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      margin-bottom: 30px;
+    }
+
+    .home-content .start-btn {
+      width: 190px;
+      height: 55px;
+      background: #bcf89758;
+      border: 2px solid #fff;
+      outline: none;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #bcf89758;
+      font-size: 18px;
+      color: #fff;
+      letter-spacing: 1px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .home-content .start-btn:hover {
+      background: transparent;
+      box-shadow: none;
+    }
+
+    /* Popup guide */
+    .popup-info {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      width: 500px;
+      background: #fff;
+      border-radius: 6px;
+      padding: 10px 25px;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s ease;
+    }
+    .popup-info.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .popup-info h2 {
+      font-size: 50px;
+      color: #AA2C86;
+    }
+    .popup-info .btn-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #AA2C86;
+      margin-top: 10px;
+      padding: 15px 0 7px;
+    }
+    .popup-info .btn-group .info-btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 130px;
+      height: 45px;
+      background: #AA2C86;
+      border: 2px solid #AA2C86;
+      outline: none;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 16px;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.5s;
+    }
+    .popup-info .btn-group .info-btn:nth-child(1) {
+      background: transparent;
+      color: #AA2C86;
+    }
+    .popup-info .btn-group .info-btn:nth-child(1):hover {
+      background: #AA2C86;
+      color: #fff;
+    }
+    .popup-info .btn-group .info-btn:nth-child(2):hover {
+      background: #681650;
+      border-color: #681650;
+    }
+
+    /* Quiz Section */
+    .quiz-section {
+      background: #09001d;
+      transition: 0.8s ease-in-out;
+      transition-delay: 0.25s;
+      z-index: 100;
+    }
+    .quiz-section.active {
+      left: 0;
+    }
+    .quiz-box {
+      position: relative;
+      width: 500px;
+      background: transparent;
+      border: 2px solid #AA2C86;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 30px;
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.9);
+      transition: 0.3s ease;
+    }
+    .quiz-box.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: scale(1);
+      transition: 1s ease;
+      transition-delay: 1s;
+    }
+    .quiz-box h1 {
+      font-size: 32px;
+      text-align: center;
+      background: linear-gradient(45deg, transparent, #AA2C86, transparent);
+      border-radius: 6px;
+      margin-bottom: 10px;
+    }
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 2px solid #AA2C86;
+      margin-bottom: 30px;
+    }
+    .quiz-header span {
+      font-size: 18px;
+      font-weight: 500;
+    }
+    .header-score {
+      display: none;
+      background: #AA2C86;
+      border-radius: 3px;
+      padding: 7px;
+    }
+    .question-text {
+      font-size: 24px;
+      font-weight: 600;
+    }
+    .option-list .option {
+      width: 100%;
+      padding: 12px;
+      background: transparent;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      font-size: 17px;
+      margin: 15px 0;
+      cursor: pointer;
+    }
+    .option-list .option:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    .option-list .option.correct {
+      background: #09001d;
+    }
+    .option-list .option.incorrect {
+      background: #09001d;
+    }
+    .option-list .option.disabled {
+      pointer-events: none;
+    }
+    .quiz-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 2px solid #AA2C86;
+      padding-top: 20px;
+      margin-top: 25px;
+    }
+    .quiz-footer .question-total {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .next-btn {
+      width: 100px;
+      height: 45px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      outline: none;
+      color: rgba(255, 255, 255, 0.3);
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      pointer-events: none;
+      transition: 0.5s;
+    }
+    .next-btn.active {
+      pointer-events: auto;
+      background: #AA2C86;
+      border-color: #AA2C86;
+      color: #fff;
+    }
+    .next-btn.active:hover {
+      background: #681650;
+      border-color: #681650;
+    }
+
+    /* Result Box */
+    .result-box {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      width: 500px;
+      background: transparent;
+      border: 2px solid #AA2C86;
+      border-radius: 6px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s ease;
+    }
+    .result-box.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .result-box h2 {
+      font-size: 52px;
+    }
+    .percentage-container {
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 20px 0 40px;
+    }
+    .circular-progress {
+      position: relative;
+      width: 250px;
+      height: 250px;
+      background: conic-gradient(#AA2C86 3.6deg, rgba(255, 255, 255, 0.1) 0deg);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .circular-progress::before {
+      content: '';
+      position: absolute;
+      width: 210px;
+      height: 210px;
+      background-color: #09001d;
+      border-radius: 50%;
+    }
+    .progress-value {
+      position: relative;
+      font-size: 45px;
+      font-weight: 600;
+    }
+    .score-text {
+      font-size: 26px;
+      font-weight: 600;
+      margin-top: 20px;
+    }
+    .buttons button {
+      width: 130px;
+      height: 47px;
+      background-color: #AA2C86;
+      border: 2px solid #AA2C86;
+      outline: none;
+      border-radius: 6px;
+      font-size: 16px;
+      color: #fff;
+      font-weight: 600;
+      margin: 0 20px 20px;
+      cursor: pointer;
+    }
+    .buttons button:hover {
+      background: #681650;
+      border-color: #681650;
+    }
+  </style>
+</head>
+<body>
+  <main class="main">
+    <!-- Header with navigation and language switch -->
+    <header class="header">
+      <a href="#" class="logo" id="logo">Consultation</a>
+      <nav class="navbar">
+        <a href="index.html" id="nav-home">Home</a>
+        <a href="signIn.html" id="nav-join">wanna join us?</a>
+      </nav>
+      <div class="language-switch">
+        <button id="lang-en">English</button>
+        <button id="lang-np">नेपाली</button>
+      </div>
+    </header>
+
+    <!-- Container for home & quiz sections -->
+    <div class="container">
+      <!-- Quiz Section -->
+      <section class="quiz-section">
+        <div class="quiz-box" id="quiz-box">
+          <h1 id="quiz-title">Consultation</h1>
+          <div class="quiz-header">
+            <span id="quiz-welcome">Welcome to Consultation</span>
+            <span class="header-score" id="header-score">Score: 0 / 5</span>
+          </div>
+          <h2 class="question-text" id="question-text"></h2>
+          <div class="option-list" id="option-list"></div>
+          <div class="quiz-footer">
+            <span class="question-total" id="question-total"></span>
+            <button class="next-btn" id="next-btn">Next</button>
+          </div>
+        </div>
+        <div class="result-box" id="result-box">
+          <h2 id="result-heading">Plant Health:</h2>
+          <div class="percentage-container">
+            <div class="circular-progress">
+              <span class="progress-value" id="progress-value">0%</span>
+            </div>
+            <span class="score-text" id="score-text">Your Score 0 out of 5</span>
+          </div>
+          <div class="buttons">
+            <button class="tryAgain-btn" id="tryAgain-btn">Recheck</button>
+            <button class="goHome-btn" id="goHome-btn">Go To Home</button>
+          </div>
+        </div>
+      </section>
+      <!-- Home Section -->
+      <section class="home">
+        <div class="home-content">
+          <h1 id="home-heading">Consultation</h1>
+          <p id="home-text">
+            Welcome to the botanical query. After starting Consultation you will get your answer
+          </p>
+          <button class="start-btn" id="start-btn">Start Consultation</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Popup guide -->
+  <div class="popup-info" id="popup-info">
+    <h2 id="popup-heading">Consultation</h2>
+    <div class="btn-group">
+      <button class="info-btn exit-btn" id="exit-btn">Exit Consultation</button>
+      <a href="#" class="info-btn continue-btn" id="continue-btn">Continue</a>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <p>&copy; 2025 Consultation</p>
+      <ul class="social-icons">
+        <li><a href="#" class="icon-link">Facebook</a></li>
+        <li><a href="#" class="icon-link">Twitter</a></li>
+        <li><a href="#" class="icon-link">Instagram</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    /* ---------- Translation Data ---------- */
+    const translations = {
+      consultation: { en: "Consultation", np: "परामर्श" },
+      home: { en: "Home", np: "गृह" },
+      join: { en: "wanna join us?", np: "हामीलाई सामेल हुनुहुन्छ?" },
+      welcome: {
+        en: "Welcome to Consultation",
+        np: "परामर्शमा स्वागत छ"
+      },
+      startConsultation: {
+        en: "Start Consultation",
+        np: "परामर्श सुरु गर्नुहोस्"
+      },
+      exitConsultation: {
+        en: "Exit Consultation",
+        np: "परामर्शबाट बाहिर निस्कनुहोस्"
+      },
+      continue: { en: "Continue", np: "अगाडि बढ्नुहोस्" },
+      plantHealth: { en: "Plant Health:", np: "बोटको स्वास्थ्य:" },
+      yourScore: {
+        en: "Your Score",
+        np: "तपाईंको स्कोर"
+      },
+      recheck: { en: "Recheck", np: "पुनः जाँच गर्नुहोस्" },
+      goHome: { en: "Go To Home", np: "गृहमा जानुहोस्" },
+      stepsAway: {
+        en: "steps away from success!!",
+        np: "सफलताबाट टाढा छन्!!"
+      },
+      homeText: {
+        en: "Welcome to the botanical query. After starting Consultation you will get your answer",
+        np: "वनस्पति प्रश्नमा स्वागत छ। परामर्श सुरु गरेपछि तपाईंले आफ्नो उत्तर पाउनुहुनेछ।"
+      }
+    };
+
+    /* ---------- Questions Data ---------- */
+    const questionsEn = [
+      {
+        numb: 1,
+        question: "How often do you water your plants?",
+        answer: "A. Everyday",
+        options: [
+          "A. Everyday",
+          "B. Once a week",
+          "C. Thrice a week",
+          "D. Never"
+        ]
+      },
+      {
+        numb: 2,
+        question: "Does your plant look dry even if it is watered everyday?",
+        answer: "B. No",
+        options: ["A. Yes", "B. No"]
+      },
+      {
+        numb: 3,
+        question: "Which fertilizer do you use or not?",
+        answer: "D. No fertilizer",
+        options: [
+          "A. Organic fertilizer",
+          "B. Inorganic fertilizer",
+          "C. Slow-Release fertilizer",
+          "D. No fertilizer"
+        ]
+      },
+      {
+        numb: 4,
+        question: "Have you seen any pests on your plant?",
+        answer: "B. No",
+        options: ["A. Yes", "B. No"]
+      },
+      {
+        numb: 5,
+        question: "Does your plant have spots, holes or unusual growth?",
+        answer: "B. No",
+        options: ["A. Yes", "B. No"]
+      },
+      {
+        numb: 6,
+        question: "Does the soil drain well?",
+        answer: "A. Yes, Drains Quickly",
+        options: [
+          "A. Yes, Drains Quickly",
+          "B. Stays Wet for a Long Time",
+          "C. Drains Slowly but Evenly",
+          "D. I'm Not Sure"
+        ]
+      },
+      {
+        numb: 7,
+        question: "Are there any foul smells near the plant?",
+        answer: "C. No Smell at All",
+        options: [
+          "A. Yes, Smells Rotten",
+          "B. Slight Musty Smell",
+          "C. No Smell at All",
+          "D. I Haven't Checked"
+        ]
+      },
+      {
+        numb: 8,
+        question: "Is the plant growing slower than expected?",
+        answer: "C. Growing at a Normal Rate",
+        options: [
+          "A. Yes, Much Slower",
+          "B. Slightly Slower",
+          "C. Growing at a Normal Rate",
+          "D. Growing Too Fast"
+        ]
+      },
+      {
+        numb: 9,
+        question: "Are the leaves curling or twisting?",
+        answer: "C. No, Leaves Look Normal",
+        options: [
+          "A. Yes, Upwards Curling",
+          "B. Yes, Downwards Curling",
+          "C. No, Leaves Look Normal",
+          "D. Leaves Are Falling Off"
+        ]
+      },
+      {
+        numb: 10,
+        question: "Are the flowers or fruits dropping before maturing?",
+        answer: "C. No, They Mature Normally",
+        options: [
+          "A. Yes, All of Them",
+          "B. Yes, Some of Them",
+          "C. No, They Mature Normally",
+          "D. I Don't Have Flowers/Fruits Yet"
+        ]
+      }
+    ];
+
+    const questionsNp = [
+      {
+        numb: 1,
+        question: "तपाईं कति पटक तपाईंको बोटहरू पानी दिनुहुन्छ?",
+        answer: "ए. हरेक दिन",
+        options: [
+          "ए. हरेक दिन",
+          "बी. हप्तामा एक पटक",
+          "सी. हप्तामा तीन पटक",
+          "डी. कहिल्यै होइन"
+        ]
+      },
+      {
+        numb: 2,
+        question: "के तपाईंको बोट हरेक दिन पानी दिइए पनि सुख्खा देखिन्छ?",
+        answer: "बी. होइन",
+        options: ["ए. हो", "बी. होइन"]
+      },
+      {
+        numb: 3,
+        question: "तपाईं कुन मल प्रयोग गर्नुहुन्छ वा नगर्नुहुन्छ?",
+        answer: "डी. कुनै मल होइन",
+        options: [
+          "ए. जैविक मल",
+          "बी. अजैविक मल",
+          "सी. ढिलो मुक्त हुने मल",
+          "डी. कुनै मल होइन"
+        ]
+      },
+      {
+        numb: 4,
+        question: "के तपाईंले तपाईंको बोटमा कुनै कीरा देख्नु भएको छ?",
+        answer: "बी. होइन",
+        options: ["ए. हो", "बी. होइन"]
+      },
+      {
+        numb: 5,
+        question: "के तपाईंको बोटमा दाग, प्वाल वा असामान्य वृद्धि छ?",
+        answer: "बी. होइन",
+        options: ["ए. हो", "बी. होइन"]
+      },
+      {
+        numb: 6,
+        question: "के माटो राम्रोसँग निस्कन्छ?",
+        answer: "ए. हो, छिटो निस्कन्छ",
+        options: [
+          "ए. हो, छिटो निस्कन्छ",
+          "बी. लामो समयसम्म भिजेको रहन्छ",
+          "सी. ढिलो तर समान रूपमा निस्कन्छ",
+          "डी. म निश्चित छैन"
+        ]
+      },
+      {
+        numb: 7,
+        question: "के बोटको नजिक कुनै खराब गन्ध छ?",
+        answer: "सी. कुनै गन्ध छैन",
+        options: [
+          "ए. हो, सडेको गन्ध",
+          "बी. हल्का मौली गन्ध",
+          "सी. कुनै गन्ध छैन",
+          "डी. मैले जाँच गरेको छैन"
+        ]
+      },
+      {
+        numb: 8,
+        question: "के बोट अपेक्षाभन्दा ढिलो बढिरहेको छ?",
+        answer: "सी. सामान्य दरमा बढ्दैछ",
+        options: [
+          "ए. हो, धेरै ढिलो",
+          "बी. अलिकति ढिलो",
+          "सी. सामान्य दरमा बढ्दैछ",
+          "डी. धेरै छिटो बढ्दैछ"
+        ]
+      },
+      {
+        numb: 9,
+        question: "के पातहरू मरो वा मोडिएका छन्?",
+        answer: "सी. होइन, पातहरू सामान्य देखिन्छन्",
+        options: [
+          "ए. हो, माथि मोडिएका",
+          "बी. हो, तल मोडिएका",
+          "सी. होइन, पातहरू सामान्य देखिन्छन्",
+          "डी. पातहरू झरेका छन्"
+        ]
+      },
+      {
+        numb: 10,
+        question: "के फूल वा फल परिपक्व हुनुभन्दा पहिले झर्दै छन्?",
+        answer: "सी. होइन, तिनीहरू सामान्य रूपमा परिपक्व हुन्छन्",
+        options: [
+          "ए. हो, सबै",
+          "बी. हो, केही",
+          "सी. होइन, तिनीहरू सामान्य रूपमा परिपक्व हुन्छन्",
+          "डी. मेरो फूल/फल छैनन्"
+        ]
+      }
+    ];
+
+    // Global variables
+    let currentLang = "en"; // default
+    let questions = questionsEn; // current questions array
+    let questionCount = 0;
+    let questionNumb = 1;
+    let userScore = 0;
+
+    /* ---------- UI Elements ---------- */
+    const logo = document.getElementById("logo");
+    const navHome = document.getElementById("nav-home");
+    const navJoin = document.getElementById("nav-join");
+    const homeHeading = document.getElementById("home-heading");
+    const homeText = document.getElementById("home-text");
+    const startBtn = document.getElementById("start-btn");
+    const popupInfo = document.getElementById("popup-info");
+    const popupHeading = document.getElementById("popup-heading");
+    const exitBtn = document.getElementById("exit-btn");
+    const continueBtn = document.getElementById("continue-btn");
+    const main = document.querySelector(".main");
+    const quizSection = document.querySelector(".quiz-section");
+    const quizBox = document.getElementById("quiz-box");
+    const quizTitle = document.getElementById("quiz-title");
+    const quizWelcome = document.getElementById("quiz-welcome");
+    const headerScore = document.getElementById("header-score");
+    const questionText = document.getElementById("question-text");
+    const optionList = document.getElementById("option-list");
+    const questionTotal = document.getElementById("question-total");
+    const nextBtn = document.getElementById("next-btn");
+    const resultBox = document.getElementById("result-box");
+    const resultHeading = document.getElementById("result-heading");
+    const progressValue = document.getElementById("progress-value");
+    const scoreText = document.getElementById("score-text");
+    const tryAgainBtn = document.getElementById("tryAgain-btn");
+    const goHomeBtn = document.getElementById("goHome-btn");
+    const langEnBtn = document.getElementById("lang-en");
+    const langNpBtn = document.getElementById("lang-np");
+
+    /* ---------- Functions to Update UI Texts ---------- */
+    function updateStaticTexts() {
+      logo.textContent = translations.consultation[currentLang];
+      navHome.textContent = translations.home[currentLang];
+      navJoin.textContent = translations.join[currentLang];
+      homeHeading.textContent = translations.consultation[currentLang];
+      homeText.textContent = translations.homeText[currentLang];
+      startBtn.textContent = translations.startConsultation[currentLang];
+      popupHeading.textContent = translations.consultation[currentLang];
+      exitBtn.textContent = translations.exitConsultation[currentLang];
+      continueBtn.textContent = translations.continue[currentLang];
+      quizTitle.textContent = translations.consultation[currentLang];
+      quizWelcome.textContent = translations.welcome[currentLang];
+      resultHeading.textContent = translations.plantHealth[currentLang];
+      tryAgainBtn.textContent = translations.recheck[currentLang];
+      goHomeBtn.textContent = translations.goHome[currentLang];
+    }
+
+    function updateQuestionsArray() {
+      questions = currentLang === "en" ? questionsEn : questionsNp;
+    }
+
+    /* ---------- Language Switch Handlers ---------- */
+    langEnBtn.addEventListener("click", () => {
+      currentLang = "en";
+      updateStaticTexts();
+      updateQuestionsArray();
+      // If the quiz has already started, update the current question text.
+      if (quizSection.classList.contains("active")) {
+        showQuestions(questionCount);
+        questionCounter(questionNumb);
+        headerScore.textContent = `Score: ${userScore} / 5`;
+      }
+    });
+
+    langNpBtn.addEventListener("click", () => {
+      currentLang = "np";
+      updateStaticTexts();
+      updateQuestionsArray();
+      if (quizSection.classList.contains("active")) {
+        showQuestions(questionCount);
+        questionCounter(questionNumb);
+        headerScore.textContent = `स्कोर: ${userScore} / 5`;
+      }
+    });
+
+    /* ---------- Event Handlers for Quiz Flow ---------- */
+    startBtn.onclick = () => {
+      popupInfo.classList.add("active");
+      main.classList.add("active");
+    };
+
+    exitBtn.onclick = () => {
+      popupInfo.classList.remove("active");
+      main.classList.remove("active");
+    };
+
+    continueBtn.onclick = () => {
+      quizSection.classList.add("active");
+      popupInfo.classList.remove("active");
+      main.classList.remove("active");
+      quizBox.classList.add("active");
+      // Reset quiz state
+      questionCount = 0;
+      questionNumb = 1;
+      userScore = 0;
+      showQuestions(questionCount);
+      questionCounter(questionNumb);
+      headerScore.textContent =
+        currentLang === "en"
+          ? `Score: ${userScore} / 5`
+          : `स्कोर: ${userScore} / 5`;
+    };
+
+    nextBtn.onclick = () => {
+      if (questionCount < questions.length - 1) {
+        questionCount++;
+        showQuestions(questionCount);
+        questionNumb++;
+        questionCounter(questionNumb);
+        nextBtn.classList.remove("active");
+      } else {
+        showResultBox();
+      }
+    };
+
+    tryAgainBtn.onclick = () => {
+      quizBox.classList.add("active");
+      resultBox.classList.remove("active");
+      nextBtn.classList.remove("active");
+      questionCount = 0;
+      questionNumb = 1;
+      userScore = 0;
+      showQuestions(questionCount);
+      questionCounter(questionNumb);
+      headerScore.textContent =
+        currentLang === "en"
+          ? `Score: ${userScore} / 5`
+          : `स्कोर: ${userScore} / 5`;
+    };
+
+    goHomeBtn.onclick = () => {
+      quizSection.classList.remove("active");
+      resultBox.classList.remove("active");
+      nextBtn.classList.remove("active");
+      questionCount = 0;
+      questionNumb = 1;
+      userScore = 0;
+      showQuestions(questionCount);
+      questionCounter(questionNumb);
+    };
+
+    /* ---------- Quiz Functions ---------- */
+    function showQuestions(index) {
+      const currentQuestion = questions[index];
+      questionText.textContent = `${currentQuestion.numb}. ${currentQuestion.question}`;
+      let optionTag = "";
+      currentQuestion.options.forEach(option => {
+        optionTag += `<div class="option"><span>${option}</span></div>`;
+      });
+      optionList.innerHTML = optionTag;
+      const options = optionList.querySelectorAll(".option");
+      options.forEach(opt => {
+        opt.setAttribute("onclick", "optionSelected(this)");
+      });
+    }
+
+    window.optionSelected = function (answer) {
+      const userAnswer = answer.textContent;
+      const correctAnswer = questions[questionCount].answer;
+      const allOptions = optionList.children.length;
+      if (userAnswer === correctAnswer) {
+        answer.classList.add("correct");
+        userScore++;
+      } else {
+        answer.classList.add("incorrect");
+        for (let i = 0; i < allOptions; i++) {
+          if (optionList.children[i].textContent === correctAnswer) {
+            optionList.children[i].classList.add("correct");
+          }
+        }
+      }
+      // disable all options
+      for (let i = 0; i < allOptions; i++) {
+        optionList.children[i].classList.add("disabled");
+      }
+      nextBtn.classList.add("active");
+      headerScore.textContent =
+        currentLang === "en"
+          ? `Score: ${userScore} / 5`
+          : `स्कोर: ${userScore} / 5`;
+    };
+
+    function questionCounter(index) {
+      questionTotal.textContent = `${index} ${currentLang === "en" ? "of" : "मध्ये"} ${questions.length} ${currentLang === "en" ? "Questions" : "प्रश्नहरू"}`;
+    }
+
+    function showResultBox() {
+      quizBox.classList.remove("active");
+      resultBox.classList.add("active");
+      scoreText.textContent =
+        currentLang === "en"
+          ? `You are ${questions.length - userScore} ${translations.stepsAway[currentLang]}`
+          : `तपाईं ${questions.length - userScore} ${translations.stepsAway[currentLang]}`;
+      let progressStartValue = -1;
+      const progressEndValue = (userScore / questions.length) * 100;
+      const speed = 20;
+      const circularProgress = document.querySelector(".circular-progress");
+      const progress = setInterval(() => {
+        progressStartValue++;
+        progressValue.textContent = `${progressStartValue}%`;
+        circularProgress.style.background = `conic-gradient(#AA2C86 ${progressStartValue * 3.6}deg, rgba(255,255,255,0.1) 0deg)`;
+        if (progressStartValue === progressEndValue) {
+          clearInterval(progress);
+        }
+      }, speed);
+    }
+
+    // On load, update static texts for the default language.
+    updateStaticTexts();
+  </script>
+</body>
+</html>
