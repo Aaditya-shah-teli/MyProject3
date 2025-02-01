@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plant Disease Detector</title>
+    <style>
+        body {
+            background-color: #eaf4e6;
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: rgba(234, 244, 230, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 100, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: #006400;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #333;
+            font-size: 1rem;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            width: 70%;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 12px;
+            background: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 80%;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        #preview img {
+            width: 100%;
+            max-width: 350px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f2f7f2;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        #result h2 {
+            color: #008000;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul li a {
+            font-size: 1rem;
+            text-decoration: none;
+            color: #2a9d8f;
+            display: inline-block;
+            margin: 10px 0;
+        }
+
+        ul li a:hover {
+            color: #007c5f;
+        }
+
+        .footer {
+            font-size: 0.8rem;
+            margin-top: 30px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Plant Disease Detector</h1>
+        <p>Upload an image of a leaf to check for diseases and receive recommendations for care.</p>
+
+        <input type="file" id="uploadInput" accept="image/*">
+        <button onclick="analyzeImage()">Detect Disease</button>
+
+        <div id="preview">
+            <img id="uploadedImage" src="" alt="">
+        </div>
+
+        <div id="result">
+            <h2>Disease: <span id="diseaseName">N/A</span></h2>
+            <p id="diseaseDesc">Upload an image to check for disease.</p>
+            <h3>Suggested Cure:</h3>
+            <p id="cure">---</p>
+            <h3>Recommended Products:</h3>
+            <ul id="productList"></ul>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Powered by Agritech Solutions. Your companion for healthy crops.</p>
+    </div>
+
+    <script>
+        function analyzeImage() {
+            let input = document.getElementById('uploadInput');
+            let image = document.getElementById('uploadedImage');
+            let file = input.files[0];
+
+            if (!file) {
+                alert("Please upload an image first!");
+                return;
+            }
+
+            let reader = new FileReader();
+            reader.onload = function (e) {
+                image.src = e.target.result;
+                detectDisease();  // Call the detection function
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function detectDisease() {
+            // Fake disease detection based on file name (for demo purposes)
+            let fileName = document.getElementById('uploadInput').files[0].name.toLowerCase();
+            let diseaseName = document.getElementById("diseaseName");
+            let diseaseDesc = document.getElementById("diseaseDesc");
+            let cure = document.getElementById("cure");
+            let productList = document.getElementById("productList");
+
+            // Example Diseases
+            let diseases = {
+                "yellow_leaf": {
+                    name: "Yellow Leaf Spot",
+                    desc: "Fungal disease causing yellow spots on leaves.",
+                    cure: "Use a fungicide containing copper.",
+                    products: [
+                        { name: "Neem Oil Spray", link: "https://raiseyourgarden.com/home/homemade-neem-oil-spray-for-organic-pest-control" },
+                        { name: "Fungicide X", link: "https://andersonspro.com/product-detail/fungicide-x" }
+                    ]
+                },
+                "brown_leaf": {
+                    name: "Leaf Blight",
+                    desc: "Bacterial disease causing brown patches.",
+                    cure: "Use copper-based antibacterial spray.",
+                    products: [
+                        { name: "Bio-Fungicide", link: "https://example.com/bio-fungicide" },
+                        { name: "Copper Spray", link: "https://example.com/copper-spray" }
+                    ]
+                },
+                "green_leaf": {
+                    name: "Healthy Plant",
+                    desc: "No problems detected.",
+                    cure: "Keep watering regularly.",
+                    products: [
+                        { name: "Bio-Fungicide", link: "https://example.com/bio-fungicide" },
+                        { name: "Copper Spray", link: "https://example.com/copper-spray" }
+                    ]
+                }
+            };
+
+            // Checking file name for known disease patterns
+            if (fileName.includes("yellow")) {
+                let disease = diseases["yellow_leaf"];
+                diseaseName.textContent = disease.name;
+                diseaseDesc.textContent = disease.desc;
+                cure.textContent = disease.cure;
+                updateProducts(disease.products);
+            } else if (fileName.includes("brown")) {
+                let disease = diseases["brown_leaf"];
+                diseaseName.textContent = disease.name;
+                diseaseDesc.textContent = disease.desc;
+                cure.textContent = disease.cure;
+                updateProducts(disease.products);
+            } else {
+                diseaseName.textContent = "Unknown Disease";
+                diseaseDesc.textContent = "We couldn't identify the disease. Please consult an expert.";
+                cure.textContent = "---";
+                productList.innerHTML = "";
+            }
+        }
+
+        function updateProducts(products) {
+            let productList = document.getElementById("productList");
+            productList.innerHTML = ""; // Clear previous items
+            products.forEach(product => {
+                let li = document.createElement("li");
+                let a = document.createElement("a");
+                a.textContent = product.name;
+                a.href = product.link;
+                a.target = "_blank";
+                li.appendChild(a);
+                productList.appendChild(li);
+            });
+        }
+    </script>
+</body>
+</html>
